@@ -1,0 +1,16 @@
+{
+  "name": "programaxml-api",
+  "version": "1.0.0",
+  "description": "API para buscar XMLs com sistema de créditos",
+  "main": "api/buscar-xml.js",
+  "scripts": {
+    "dev": "node api/buscar-xml.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["xml", "danfe", "meudanfe", "api"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.43.4"
+  }
+}

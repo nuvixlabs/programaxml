@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeuDanfe - Buscar XML</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* SEÇÃO LOGIN */
+        .login-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px 30px;
+            margin-bottom: 40px;
+        }
+
+        .login-section h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .login-section p {
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            grid-column: 1 / 2;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-signup {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            grid-column: 2 / 3;
+        }
+
+        .btn-signup:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* MODAL DE CADASTRO */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px 30px;
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            color: #333;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .modal-content button[type="submit"] {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-top: 15px;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .form-footer a {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .form-footer a:hover {
+            color: #764ba2;
+        }
+
+        /* SEÇÃO PRICING */
+        .pricing-section {
+            margin-bottom: 40px;
+        }
+
+        .pricing-section h2 {
+            color: white;
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .pricing-card h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .price {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .price-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .features-list {
+            list-style: none;
+            font-size: 13px;
+            color: #666;
+            text-align: left;
+            margin: 15px 0;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .features-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* SEÇÃO BENEFÍCIOS */
+        .benefits-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .benefits-section h2 {
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .benefit-item {
+            text-align: center;
+        }
+
+        .benefit-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .benefit-item h3 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .benefit-item p {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 600px) {
+            .login-section {
+                padding: 30px 20px;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-signup {
+                grid-column: 1 / 2;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SEÇÃO LOGIN -->
+        <div class="login-section">
+            <h1>🔍 MeuDanfe</h1>
+            <p>Busque XMLs de forma rápida e segura</p>
+            
+            <div id="loginMessage" class="message" style="display: none;"></div>
+
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-login">🔐 Entrar</button>
+                    <button type="button" class="btn-signup" onclick="openSignupModal()">📝 Cadastrar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- SEÇÃO PRICING -->
+        <div class="pricing-section">
+            <h2>💰 Planos de Créditos</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Básico</h3>
+                    <div class="price">R$ 5,00</div>
+                    <div class="price-label">5 buscas</div>
+                    <ul class="features-list">
+                        <li>5 XMLs</li>
+                        <li>Suporte por email</li>
+                        <li>Válido por 30 dias</li>
+                    </ul>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>Popular</h3>
+                    <div class="price">R$ 50,00</div>
+                    <div class="price-label">100 buscas</div>
+                    <ul class="features-list">
+                        <li>100 XMLs</li>
+                        <li>Prioridade</li>
+                        <li>Válido por 90 dias</li>
+                    </ul>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>Premium</h3>
+                    <div class="price">R$ 500,00</div>
+                    <div class="price-label">Ilimitado</div>
+                    <ul class="features-list">
+                        <li>Buscas ilimitadas</li>
+                        <li>Suporte 24/7</li>
+                        <li>Sem limite de dias</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO BENEFÍCIOS -->
+        <div class="benefits-section">
+            <h2>✨ Por que usar?</h2>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">⚡</div>
+                    <h3>Rápido</h3>
+                    <p>Busque XMLs em segundos sem complicações</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🔒</div>
+                    <h3>Seguro</h3>
+                    <p>Seus dados são protegidos e criptografados</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">📊</div>
+                    <h3>Histórico</h3>
+                    <p>Acesse seu histórico de downloads</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">💾</div>
+                    <h3>Cache</h3>
+                    <p>Buscas em cache economizam créditos</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">📦</div>
+                    <h3>Lotes</h3>
+                    <p>Baixe vários XMLs em um ZIP</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎯</div>
+                    <h3>Simples</h3>
+                    <p>Interface intuitiva e fácil de usar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CADASTRO -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar Conta</h2>
+                <button class="close-btn" onclick="closeSignupModal()">×</button>
+            </div>
+            <div id="signupMessage" class="message" style="display: none;"></div>
+            <form onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="signupName">Nome</label>
+                    <input type="text" id="signupName" required placeholder="Seu nome completo">
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Senha</label>
+                    <input type="password" id="signupPassword" required placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirm">Confirmar Senha</label>
+                    <input type="password" id="signupConfirm" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-login">📝 Criar Conta</button>
+            </form>
+            <div class="form-footer">
+                Já tem conta? <a onclick="switchToLogin()">Faça login aqui</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Limpar localStorage ao carregar landing (começa do zero)
+        window.addEventListener('load', () => {
+            document.getElementById('loginEmail').value = ''
+            document.getElementById('loginPassword').value = ''
+        })
+
+        // Modal Functions
+        function openSignupModal() {
+            document.getElementById('signupModal').classList.add('active')
+        }
+
+        function closeSignupModal() {
+            document.getElementById('signupModal').classList.remove('active')
+        }
+
+        function switchToLogin() {
+            closeSignupModal()
+        }
+
+        // Form Functions
+        function handleLogin(event) {
+            event.preventDefault()
+            const email = document.getElementById('loginEmail').value
+            const password = document.getElementById('loginPassword').value
+
+            // Simular login
+            if (email === 'matheus.transportesirmaos@gmail.com' && password === '123456') {
+                localStorage.setItem('user_email', email)
+                localStorage.setItem('admin_creditos', '500')
+                localStorage.setItem('user_id', 'admin-12345')
+                
+                showMessage('loginMessage', '✅ Login realizado! Redirecionando...', 'success')
+                setTimeout(() => {
+                    window.location.href = 'index.html'
+                }, 500)
+            } else {
+                showMessage('loginMessage', '❌ Email ou senha incorretos', 'error')
+            }
+        }
+
+        function handleSignup(event) {
+            event.preventDefault()
+            const name = document.getElementById('signupName').value
+            const email = document.getElementById('signupEmail').value
+            const password = document.getElementById('signupPassword').value
+            const confirm = document.getElementById('signupConfirm').value
+
+            if (password !== confirm) {
+                showMessage('signupMessage', '❌ Senhas não conferem', 'error')
+                return
+            }
+
+            // Simular cadastro
+            localStorage.setItem('user_email', email)
+            localStorage.setItem('user_name', name)
+            localStorage.setItem('admin_creditos', '5') // 5 buscas grátis
+            localStorage.setItem('user_id', 'user-' + Date.now())
+
+            showMessage('signupMessage', '✅ Conta criada com sucesso! Redirecionando...', 'success')
+            setTimeout(() => {
+                window.location.href = 'index.html'
+            }, 500)
+        }
+
+        function showMessage(elementId, message, type) {
+            const msgDiv = document.getElementById(elementId)
+            msgDiv.textContent = message
+            msgDiv.className = 'message ' + type
+            msgDiv.style.display = 'block'
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            const signupModal = document.getElementById('signupModal')
+            if (e.target === signupModal) closeSignupModal()
+        })
+    </script>
+</body>
+</html>

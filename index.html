@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar XML - MeuDanfe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
+        .section h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+
+        .status {
+            font-size: 13px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .status.loading {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-info span {
+            color: #666;
+        }
+
+        .credits {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        button.logout {
+            background: #dc3545;
+            padding: 8px 16px;
+            width: auto;
+            margin-top: 0;
+        }
+
+        button.logout:hover {
+            box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        button.recharge {
+            background: #28a745;
+            padding: 8px 16px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        button.recharge:hover {
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        /* PIX Modal */
+        .pix-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pix-qr {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: #f0f0f0;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .pix-key {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: monospace;
+            word-break: break-all;
+            border: 1px solid #ddd;
+        }
+
+        .payment-status {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .payment-status.waiting {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+
+        .payment-status.confirmed {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #28a745;
+        }
+
+        .price-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .price-btn {
+            padding: 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .price-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .price-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Histórico de XMLs */
+        .xml-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .xml-item:hover {
+            background: #f9f9f9;
+        }
+
+        .xml-item.selected {
+            background: #f0f4ff;
+        }
+
+        .xml-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .xml-info {
+            flex: 1;
+        }
+
+        .xml-name {
+            font-weight: 600;
+            color: #333;
+            font-family: monospace;
+            font-size: 13px;
+            word-break: break-all;
+        }
+
+        .xml-date {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .xml-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .xml-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .xml-download-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .xml-download-btn:hover {
+            background: #218838;
+        }
+
+        .xml-delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .xml-delete-btn:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Buscar XML</h1>
+            <p>MeuDanfe - Sistema de Créditos</p>
+        </div>
+
+        <!-- SEÇÃO LOGIN -->
+        <!-- SEÇÃO BUSCA XML -->
+        <div id="appSection" class="section">
+            <div class="user-info">
+                <span>Usuário: <strong id="userName">...</strong></span>
+                <div class="credits" id="creditos">R$ 0.00</div>
+                <button class="recharge" onclick="openRechargeModal()">💳 Recarregar</button>
+                <button class="logout" onclick="logout()">Sair</button>
+            </div>
+
+            <h2>Buscar XMLs</h2>
+
+            <div class="info-box">
+                💡 Cole as chaves de acesso (NFe/NFC-e), uma por linha. Cada busca custa R$ 0,15.
+            </div>
+
+            <div class="form-group">
+                <label for="chaves">Chaves de Acesso</label>
+                <textarea id="chaves" placeholder="35210516505127000148550010000001234567890123&#10;35210516505127000148550010000001234567890124"></textarea>
+            </div>
+
+            <button onclick="buscar()">Buscar XMLs</button>
+
+            <div id="searchStatus" class="status"></div>
+            <div id="resultados"></div>
+
+            <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+
+            <h2>📚 Histórico de XMLs</h2>
+            <div class="info-box" style="background: #f0f4ff; border-left-color: #667eea;">
+                Aqui você pode ver todos os XMLs já buscados e baixá-los novamente sem custo adicional!
+            </div>
+
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button onclick="selectAllXMLs()" style="background: #667eea; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">✓ Selecionar Todos</button>
+                <button onclick="deselectAllXMLs()" style="background: #999; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">✗ Desselecionar</button>
+                <button onclick="downloadSelectedXMLs()" style="background: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">⬇️ Baixar Selecionados</button>
+                <button onclick="clearHistory()" style="background: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">🗑️ Limpar Histórico</button>
+            </div>
+
+            <div id="xmlHistoryList" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px;">
+                <div style="text-align: center; color: #999; padding: 20px;">
+                    Nenhum XML no histórico ainda. Faça uma busca para começar! 📭
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECHARGE MODAL -->
+    <div id="rechargeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 40px; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; color: #333;">Recarregar Créditos</h2>
+                <button onclick="closeRechargeModal()" style="font-size: 28px; cursor: pointer; color: #999; border: none; background: none;">×</button>
+            </div>
+
+            <div id="rechargeStep1" style="display: block;">
+                <h3 style="margin-bottom: 15px; color: #667eea;">💰 Escolha o valor:</h3>
+                <div style="background: #f0f4ff; border-left: 4px solid #667eea; padding: 12px; margin-bottom: 20px; border-radius: 4px;">
+                    <small style="color: #667eea;">Cada busca de XML custa <strong>R$ 0,15</strong></small>
+                </div>
+                <div class="price-options">
+                    <button class="price-btn" onclick="selectPrice(10)">R$ 10 <br><small>(67 buscas)</small></button>
+                    <button class="price-btn" onclick="selectPrice(25)">R$ 25 <br><small>(167 buscas)</small></button>
+                    <button class="price-btn" onclick="selectPrice(50)">R$ 50 <br><small>(333 buscas)</small></button>
+                    <button class="price-btn" onclick="selectPrice(100)">R$ 100 <br><small>(667 buscas)</small></button>
+                </div>
+                <div style="margin-top: 20px;">
+                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">Ou digite outro valor (R$):</label>
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
+                        <input type="number" id="customPrice" min="1" step="0.01" onchange="updateCreditPreview()" oninput="updateCreditPreview()" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" placeholder="Digite o valor">
+                        <div id="creditPreview" style="background: #e7f3ff; border: 1px solid #667eea; border-radius: 6px; padding: 12px; text-align: center; min-width: 120px; display: flex; flex-direction: column; justify-content: center;">
+                            <small style="color: #667eea;">buscas</small>
+                            <strong id="previewBuscas" style="color: #667eea; font-size: 18px;">0</strong>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="proceedToPix()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 20px;">Gerar PIX →</button>
+            </div>
+
+            <div id="rechargeStep2" style="display: none;">
+                <div class="pix-container">
+                    <div style="background: #e7ffe7; border-left: 4px solid #28a745; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+                        <div style="color: #28a745; font-weight: 600; font-size: 18px;">+<span id="buscasAdicionadas">0</span> buscas</div>
+                        <div style="color: #666; font-size: 14px;">por R$ <span id="valorConfirmado">0.00</span></div>
+                    </div>
+                    <h3 style="color: #333; margin-bottom: 20px;">Escaneie o QR Code com seu app de banco:</h3>
+                    <div class="pix-qr" id="pixQR">
+                        <div style="text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">📱</div>
+                            <div>QR Code gerado</div>
+                        </div>
+                    </div>
+
+                    <h4 style="color: #333; margin: 20px 0 10px;">Chave PIX (se preferir copiar):</h4>
+                    <div class="pix-key" id="pixKey">chave.pix.teste@exemplo.com</div>
+                    <button onclick="copyPixKey()" style="width: 100%; padding: 10px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 20px;">📋 Copiar Chave PIX</button>
+
+                    <div class="payment-status waiting" id="paymentStatus">
+                        ⏳ Aguardando confirmação do pagamento...
+                        <br><small>Pode levar alguns minutos</small>
+                    </div>
+
+                    <button onclick="confirmPayment()" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 20px;">✅ Confirmei o Pagamento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        // Adicionar JSZip via CDN
+        const script = document.createElement('script')
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
+        document.head.appendChild(script)
+
+        // ⚠️ AJUSTE ESSAS VARIÁVEIS
+        const SUPABASE_URL = 'https://seu-projeto.supabase.co'
+        const SUPABASE_ANON_KEY = 'sua_anon_public_key'
+        const BACKEND_URL = 'https://seu-projeto.vercel.app'
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        let usuarioAtual = null
+        let arquivosAtuais = []  // Guardar XMLs para download em lote
+
+        window.login = async () => {
+            const email = document.getElementById('email').value
+            const senha = document.getElementById('senha').value
+            const statusDiv = document.getElementById('loginStatus')
+
+            if (!email || !senha) {
+                statusDiv.className = 'status error'
+                statusDiv.textContent = '❌ Preencha email e senha'
+                return
+            }
+
+            statusDiv.className = 'status loading'
+            statusDiv.textContent = '⏳ Fazendo login...'
+
+            try {
+                // 🔑 CREDENCIAIS ADMIN PARA TESTE
+                if (email === 'matheus.transportesirmaos@gmail.com' && senha === '123456') {
+                    // Login de admin (simulado localmente)
+                    usuarioAtual = {
+                        id: 'admin-user-12345',
+                        email: email,
+                        is_admin: true
+                    }
+                    
+                    // Simular créditos usando localStorage
+                    localStorage.setItem('admin_creditos', '500')
+                    localStorage.setItem('admin_user_id', usuarioAtual.id)
+                    
+                    document.getElementById('userName').textContent = usuarioAtual.email
+                    document.getElementById('appSection').classList.remove('hidden')
+                    
+                    document.getElementById('creditos').textContent = 'R$ 500.00'
+                    
+                    statusDiv.className = 'status success'
+                    statusDiv.textContent = '✅ Login de ADMIN realizado com sucesso!'
+                    return
+                }
+
+                // Tentar login via Supabase (para outros usuários)
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password: senha
+                })
+
+                if (error) throw error
+
+                usuarioAtual = data.user
+                document.getElementById('userName').textContent = usuarioAtual.email
+                document.getElementById('appSection').classList.remove('hidden')
+
+                await atualizarCreditos()
+
+                statusDiv.className = 'status success'
+                statusDiv.textContent = '✅ Login realizado com sucesso!'
+            } catch (error) {
+                statusDiv.className = 'status error'
+                statusDiv.textContent = `❌ ${error.message}`
+            }
+        }
+
+        window.buscar = async () => {
+            const chavesText = document.getElementById('chaves').value
+            const statusDiv = document.getElementById('searchStatus')
+            const resultadosDiv = document.getElementById('resultados')
+
+            if (!chavesText.trim()) {
+                statusDiv.className = 'status error'
+                statusDiv.textContent = '❌ Cole as chaves primeiro'
+                return
+            }
+
+            const chaves = chavesText
+                .split('\n')
+                .map(c => c.trim())
+                .filter(c => c.length > 0)
+
+            // 💰 VERIFICAR CRÉDITOS DISPONÍVEIS
+            let creditosAtual = parseFloat(localStorage.getItem('admin_creditos') || '0')
+            let custoTotal = chaves.length * 0.15
+
+            if (creditosAtual <= 0 || creditosAtual < custoTotal) {
+                statusDiv.className = 'status error'
+                statusDiv.innerHTML = `
+                    ❌ Créditos insuficientes!
+                    <br><small>Você tem R$ ${creditosAtual.toFixed(2)}, mas precisa de R$ ${custoTotal.toFixed(2)}</small>
+                    <br><button onclick="openRechargeModal()" style="margin-top: 10px; background: #667eea; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">💳 Comprar Créditos</button>
+                `
+                return
+            }
+
+            statusDiv.className = 'status loading'
+            statusDiv.textContent = `⏳ Buscando ${chaves.length} XML(s)...`
+            resultadosDiv.innerHTML = ''
+
+            try {
+                // 🔑 SIMULAÇÃO PARA ADMIN (teste local)
+                if (usuarioAtual.is_admin) {
+                    // Simular busca para admin
+                    setTimeout(() => {
+                        let creditosAtual = parseFloat(localStorage.getItem('admin_creditos') || '500')
+                        let custoTotal = chaves.length * 0.15
+                        let creditosRestantes = creditosAtual - custoTotal
+
+                        // Simular que alguns foram encontrados
+                        let arquivos = chaves.map((chave, index) => ({
+                            nome: `${chave}.xml`,
+                            origem: index % 2 === 0 ? 'api' : 'cache',
+                            conteudo: `<?xml version="1.0"?><nfe><infNfe id="ID${index}">...</infNfe></nfe>`
+                        }))
+
+                        // Atualizar localStorage
+                        localStorage.setItem('admin_creditos', creditosRestantes.toFixed(2))
+
+                        // Mostrar resultados
+                        let html = `<div class="info-box success">
+                            ✅ Encontrados ${arquivos.length} arquivo(s)
+                            <br>💰 Custo: R$ ${custoTotal.toFixed(2)}
+                            <br>💳 Créditos restantes: R$ ${creditosRestantes.toFixed(2)}
+                            <br><button onclick="baixarTodosXML()" style="margin-top: 10px; width: auto; padding: 8px 16px; font-size: 12px; background: #28a745;">⬇️ Baixar Todos em ZIP</button>
+                        </div>`
+
+                        // Guardar XMLs para download em lote
+                        arquivosAtuais = arquivos
+
+                        arquivos.forEach(arquivo => {
+                            html += `<div class="info-box">
+                                📄 ${arquivo.nome}
+                                ${arquivo.origem === 'cache' ? '(via cache)' : '(da API)'}
+                            </div>`
+                        })
+
+                        resultadosDiv.innerHTML = html
+                        document.getElementById('creditos').textContent = `R$ ${creditosRestantes.toFixed(2)}`
+                        statusDiv.className = 'status success'
+                        statusDiv.textContent = '✅ Busca concluída!'
+
+                        // 💾 Salvar XMLs no histórico
+                        salvarXMLsNoHistorico(arquivos)
+                    }, 1500)
+                    return
+                }
+
+                // Tentar com backend real
+                const response = await fetch(`${BACKEND_URL}/api/buscar-xml`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chaves,
+                        user_id: usuarioAtual.id
+                    })
+                })
+
+                const data = await response.json()
+
+                if (!data.sucesso) {
+                    throw new Error(data.erro || 'Erro na busca')
+                }
+
+                // Atualizar créditos
+                document.getElementById('creditos').textContent = 
+                    `R$ ${data.creditosRestantes.toFixed(2)}`
+
+                // Mostrar resultados
+                let html = `<div class="info-box success">
+                    ✅ Encontrados ${data.arquivos.length} arquivo(s)
+                    <br>💰 Custo: R$ ${data.custoTotal.toFixed(2)}
+                    <br>💳 Créditos restantes: R$ ${data.creditosRestantes.toFixed(2)}
+                    <br><button onclick="baixarTodosXML()" style="margin-top: 10px; width: auto; padding: 8px 16px; font-size: 12px; background: #28a745;">⬇️ Baixar Todos em ZIP</button>
+                </div>`
+
+                // Guardar XMLs para download em lote
+                arquivosAtuais = data.arquivos
+
+                data.arquivos.forEach(arquivo => {
+                    html += `<div class="info-box">
+                        📄 ${arquivo.nome}
+                        ${arquivo.origem === 'cache' ? '(via cache)' : '(da API)'}
+                    </div>`
+                })
+
+                resultadosDiv.innerHTML = html
+                statusDiv.className = 'status success'
+                statusDiv.textContent = '✅ Busca concluída!'
+
+                // 💾 Salvar XMLs no histórico
+                salvarXMLsNoHistorico(data.arquivos)
+
+            } catch (error) {
+                statusDiv.className = 'status error'
+                statusDiv.textContent = `❌ ${error.message}`
+            }
+        }
+
+        window.logout = async () => {
+            // Limpar credenciais admin do localStorage
+            localStorage.removeItem('admin_creditos')
+            localStorage.removeItem('admin_user_id')
+            localStorage.removeItem('user_email')
+            localStorage.removeItem('user_id')
+            localStorage.removeItem('user_name')
+            
+            await supabase.auth.signOut()
+            usuarioAtual = null
+            
+            // Redirecionar para landing
+            window.location.href = 'landing.html'
+        }
+
+        async function atualizarCreditos() {
+            try {
+                const { data } = await supabase
+                    .from('usuarios')
+                    .select('creditos')
+                    .eq('id', usuarioAtual.id)
+                    .single()
+
+                if (data) {
+                    document.getElementById('creditos').textContent = 
+                        `R$ ${data.creditos.toFixed(2)}`
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar créditos:', error)
+            }
+        }
+
+        // Verificar se já está logado
+        window.addEventListener('load', async () => {
+            // Primeiro verifica se vem de landing.html (login de admin simulado)
+            const userEmail = localStorage.getItem('user_email')
+            const userId = localStorage.getItem('user_id')
+            
+            if (userEmail && userId) {
+                // Login de admin via landing.html
+                usuarioAtual = {
+                    id: userId,
+                    email: userEmail,
+                    is_admin: true
+                }
+                document.getElementById('userName').textContent = userEmail
+                document.getElementById('appSection').classList.remove('hidden')
+                
+                const creditos = localStorage.getItem('admin_creditos') || '500'
+                document.getElementById('creditos').textContent = `R$ ${parseFloat(creditos).toFixed(2)}`
+                return
+            }
+            
+            // Verifica sessão Supabase
+            const { data } = await supabase.auth.getSession()
+            if (data.session) {
+                usuarioAtual = data.session.user
+                document.getElementById('userName').textContent = usuarioAtual.email
+                document.getElementById('appSection').classList.remove('hidden')
+                await atualizarCreditos()
+            }
+        })
+
+        // Função para baixar todos os XMLs em um ZIP
+        window.baixarTodosXML = async () => {
+            if (!window.JSZip) {
+                alert('Aguarde... Carregando biblioteca de compressão')
+                return
+            }
+
+            if (arquivosAtuais.length === 0) {
+                alert('Nenhum arquivo para baixar')
+                return
+            }
+
+            try {
+                const zip = new JSZip()
+
+                // Adicionar cada XML ao ZIP
+                arquivosAtuais.forEach((arquivo, idx) => {
+                    const conteudoXML = `<?xml version="1.0" encoding="UTF-8"?>
+<nfe>
+    <infNfe Id="arquivo_${idx}">
+        <ide>
+            <cUF>35</cUF>
+            <natOp>VENDA</natOp>
+            <indPag>1</indPag>
+            <mod>55</mod>
+            <serie>1</serie>
+            <nNF>${1000 + idx}</nNF>
+            <dEmi>${new Date().toISOString().split('T')[0]}</dEmi>
+            <hEmi>${new Date().toISOString().split('T')[1].split('.')[0]}</hEmi>
+            <tpNF>1</tpNF>
+        </ide>
+        <emit>
+            <CNPJ>12345678000190</CNPJ>
+            <xNome>EMPRESA TESTE LTDA</xNome>
+            <xFant>EMPRESA</xFant>
+        </emit>
+        <dest>
+            <CPF>12345678901</CPF>
+            <xNome>CLIENTE TESTE</xNome>
+        </dest>
+        <total>
+            <ICMSTot>
+                <vBC>1000.00</vBC>
+                <vICMS>180.00</vICMS>
+                <vBCST>0.00</vBCST>
+                <vST>0.00</vST>
+                <vProd>1000.00</vProd>
+                <vFrete>0.00</vFrete>
+                <vDesc>0.00</vDesc>
+                <vII>0.00</vII>
+                <vIPI>0.00</vIPI>
+                <vPIS>0.00</vPIS>
+                <vCOFINS>0.00</vCOFINS>
+                <vOutro>0.00</vOutro>
+                <vNF>1180.00</vNF>
+            </ICMSTot>
+        </total>
+    </infNfe>
+</nfe>`
+
+                    zip.file(arquivo.nome, conteudoXML)
+                })
+
+                // Gerar arquivo ZIP
+                const blob = await zip.generateAsync({ type: 'blob' })
+                const url = window.URL.createObjectURL(blob)
+
+                // Criar link e fazer download
+                const link = document.createElement('a')
+                link.href = url
+                link.download = `XMLs_${new Date().getTime()}.zip`
+                document.body.appendChild(link)
+                link.click()
+
+                // Limpar
+                document.body.removeChild(link)
+                window.URL.revokeObjectURL(url)
+            } catch (error) {
+                alert('Erro ao gerar ZIP: ' + error.message)
+            }
+        }
+
+        // ===== SISTEMA DE RECARGA DE CRÉDITOS COM PIX =====
+
+        let selectedPrice = 0
+
+        window.openRechargeModal = () => {
+            document.getElementById('rechargeModal').style.display = 'flex'
+            document.getElementById('rechargeStep1').style.display = 'block'
+            document.getElementById('rechargeStep2').style.display = 'none'
+            selectedPrice = 0
+            document.querySelectorAll('.price-btn').forEach(btn => btn.classList.remove('selected'))
+        }
+
+        window.closeRechargeModal = () => {
+            document.getElementById('rechargeModal').style.display = 'none'
+        }
+
+        window.updateCreditPreview = () => {
+            const customValue = parseFloat(document.getElementById('customPrice').value) || 0
+            const buscas = Math.floor(customValue / 0.15)
+            document.getElementById('previewBuscas').textContent = buscas.toLocaleString('pt-BR')
+        }
+
+        window.selectPrice = (price) => {
+            selectedPrice = price
+            document.getElementById('customPrice').value = ''
+            document.querySelectorAll('.price-btn').forEach(btn => btn.classList.remove('selected'))
+            event.target.classList.add('selected')
+            
+            // Atualizar preview com o preço selecionado
+            const buscas = Math.floor(price / 0.15)
+            document.getElementById('previewBuscas').textContent = buscas.toLocaleString('pt-BR')
+        }
+
+        window.proceedToPix = () => {
+            if (document.getElementById('customPrice').value) {
+                selectedPrice = parseFloat(document.getElementById('customPrice').value)
+                if (selectedPrice < 1) {
+                    alert('Digite um valor mínimo de R$ 1')
+                    return
+                }
+            }
+
+            if (selectedPrice <= 0) {
+                alert('Escolha um valor para recarregar')
+                return
+            }
+
+            // Calcular buscas
+            const buscas = Math.floor(selectedPrice / 0.15)
+
+            // Gerar PIX fake
+            const pixKey = 'CHAVE-PIX-' + Math.random().toString(36).substring(7).toUpperCase()
+            document.getElementById('pixKey').textContent = pixKey
+            document.getElementById('pixQR').innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">📲</div>
+                    <div>QR Code: ${selectedPrice.toFixed(2)}</div>
+                    <div style="font-size: 12px; margin-top: 10px; color: #666;">
+                        ID: ${Math.random().toString().substring(2, 10)}
+                    </div>
+                </div>
+            `
+
+            // Mostrar dados de confirmação
+            document.getElementById('buscasAdicionadas').textContent = buscas.toLocaleString('pt-BR')
+            document.getElementById('valorConfirmado').textContent = selectedPrice.toFixed(2)
+
+            // Mostrar step 2
+            document.getElementById('rechargeStep1').style.display = 'none'
+            document.getElementById('rechargeStep2').style.display = 'block'
+            document.getElementById('paymentStatus').className = 'payment-status waiting'
+            document.getElementById('paymentStatus').innerHTML = `
+                ⏳ Aguardando confirmação do pagamento...
+                <br><small>PIX no valor de R$ ${selectedPrice.toFixed(2)}</small>
+            `
+        }
+
+        window.copyPixKey = () => {
+            const pixKey = document.getElementById('pixKey').textContent
+            navigator.clipboard.writeText(pixKey).then(() => {
+                alert('✅ Chave PIX copiada!')
+            })
+        }
+
+        window.confirmPayment = () => {
+            // Simular confirmação de pagamento
+            const creditosAdicionados = (selectedPrice / 0.15).toFixed(0)
+            
+            // Atualizar créditos
+            let creditosAtual = parseFloat(localStorage.getItem('admin_creditos') || '0')
+            let creditosNovos = creditosAtual + parseFloat(selectedPrice)
+            localStorage.setItem('admin_creditos', creditosNovos.toFixed(2))
+
+            // Mostrar confirmação
+            document.getElementById('paymentStatus').className = 'payment-status confirmed'
+            document.getElementById('paymentStatus').innerHTML = `
+                ✅ Pagamento confirmado!
+                <br><strong>+R$ ${selectedPrice.toFixed(2)} = ${creditosAdicionados} buscas</strong>
+            `
+
+            // Atualizar display
+            setTimeout(() => {
+                document.getElementById('creditos').textContent = `R$ ${creditosNovos.toFixed(2)}`
+                
+                setTimeout(() => {
+                    closeRechargeModal()
+                }, 1500)
+            }, 1000)
+        }
+
+        // ===== MÓDULO DE HISTÓRICO DE XMLs =====
+
+        window.salvarXMLsNoHistorico = (arquivos) => {
+            // Obter histórico atual
+            let historico = JSON.parse(localStorage.getItem('xmlHistorico') || '[]')
+            const userId = localStorage.getItem('user_id')
+
+            // Adicionar novos XMLs com timestamp
+            arquivos.forEach(arquivo => {
+                const xmlItem = {
+                    id: Date.now() + Math.random(),
+                    nome: arquivo.nome,
+                    conteudo: arquivo.conteudo,
+                    data: new Date().toLocaleString('pt-BR'),
+                    origem: arquivo.origem || 'api'
+                }
+                historico.push(xmlItem)
+            })
+
+            // Salvar no localStorage (max 100 XMLs)
+            if (historico.length > 100) {
+                historico = historico.slice(-100)
+            }
+
+            localStorage.setItem('xmlHistorico', JSON.stringify(historico))
+
+            // Carregar/atualizar a lista
+            carregarHistorico()
+        }
+
+        window.carregarHistorico = () => {
+            const historico = JSON.parse(localStorage.getItem('xmlHistorico') || '[]')
+            const listDiv = document.getElementById('xmlHistoryList')
+
+            if (historico.length === 0) {
+                listDiv.innerHTML = `
+                    <div style="text-align: center; color: #999; padding: 20px;">
+                        Nenhum XML no histórico ainda. Faça uma busca para começar! 📭
+                    </div>
+                `
+                return
+            }
+
+            let html = ''
+            historico.reverse().forEach((xml, index) => {
+                html += `
+                    <div class="xml-item" id="xml-item-${xml.id}">
+                        <input type="checkbox" class="xml-checkbox" data-xml-id="${xml.id}" onchange="updateSelectedCount()">
+                        <div class="xml-info">
+                            <div class="xml-name">📄 ${xml.nome}</div>
+                            <div class="xml-date">📅 ${xml.data} • ${xml.origem === 'cache' ? '💾 Cache' : '🌐 API'}</div>
+                        </div>
+                        <div class="xml-actions">
+                            <button class="xml-download-btn" onclick="downloadXMLUnitario('${xml.id}')">⬇️ Download</button>
+                            <button class="xml-delete-btn" onclick="deletarXMLDoHistorico('${xml.id}')">🗑️ Deletar</button>
+                        </div>
+                    </div>
+                `
+            })
+
+            listDiv.innerHTML = html
+        }
+
+        window.selectAllXMLs = () => {
+            document.querySelectorAll('.xml-checkbox').forEach(checkbox => {
+                checkbox.checked = true
+            })
+            updateSelectedCount()
+        }
+
+        window.deselectAllXMLs = () => {
+            document.querySelectorAll('.xml-checkbox').forEach(checkbox => {
+                checkbox.checked = false
+            })
+            updateSelectedCount()
+        }
+
+        window.updateSelectedCount = () => {
+            const selecionados = document.querySelectorAll('.xml-checkbox:checked').length
+            const total = document.querySelectorAll('.xml-checkbox').length
+            console.log(`Selecionados: ${selecionados} de ${total}`)
+        }
+
+        window.downloadSelectedXMLs = async () => {
+            const checkboxes = document.querySelectorAll('.xml-checkbox:checked')
+
+            if (checkboxes.length === 0) {
+                alert('Selecione pelo menos um XML para baixar')
+                return
+            }
+
+            if (!window.JSZip) {
+                alert('Aguarde... Carregando biblioteca de compressão')
+                return
+            }
+
+            try {
+                const historico = JSON.parse(localStorage.getItem('xmlHistorico') || '[]')
+                const zip = new JSZip()
+
+                checkboxes.forEach(checkbox => {
+                    const xmlId = checkbox.getAttribute('data-xml-id')
+                    const xmlItem = historico.find(x => x.id == xmlId)
+
+                    if (xmlItem) {
+                        zip.file(xmlItem.nome, xmlItem.conteudo)
+                    }
+                })
+
+                const blob = await zip.generateAsync({ type: 'blob' })
+                const url = window.URL.createObjectURL(blob)
+                const link = document.createElement('a')
+                link.href = url
+                link.download = `XMLs_Selecionados_${new Date().getTime()}.zip`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                window.URL.revokeObjectURL(url)
+
+                alert(`✅ ${checkboxes.length} XML(s) baixado(s) com sucesso!`)
+            } catch (error) {
+                alert('Erro ao gerar ZIP: ' + error.message)
+            }
+        }
+
+        window.downloadXMLUnitario = (xmlId) => {
+            const historico = JSON.parse(localStorage.getItem('xmlHistorico') || '[]')
+            const xmlItem = historico.find(x => x.id == xmlId)
+
+            if (!xmlItem) {
+                alert('XML não encontrado')
+                return
+            }
+
+            const blob = new Blob([xmlItem.conteudo], { type: 'application/xml' })
+            const url = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.download = xmlItem.nome
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
+        }
+
+        window.deletarXMLDoHistorico = (xmlId) => {
+            if (!confirm('Tem certeza que quer deletar este XML?')) {
+                return
+            }
+
+            let historico = JSON.parse(localStorage.getItem('xmlHistorico') || '[]')
+            historico = historico.filter(x => x.id != xmlId)
+            localStorage.setItem('xmlHistorico', JSON.stringify(historico))
+
+            carregarHistorico()
+            alert('✅ XML deletado')
+        }
+
+        window.clearHistory = () => {
+            if (!confirm('Tem certeza que quer limpar TODO o histórico? Esta ação não pode ser desfeita!')) {
+                return
+            }
+
+            localStorage.removeItem('xmlHistorico')
+            carregarHistorico()
+            alert('✅ Histórico limpo')
+        }
+
+        // Carregar histórico ao abrir a página
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                carregarHistorico()
+            }, 500)
+        })
+    </script>
+
+    <!-- Script para inicializar event listeners dos botões -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Botão Recarregar
+            const btnRecharge = document.querySelector('.recharge')
+            if (btnRecharge) {
+                btnRecharge.addEventListener('click', () => {
+                    if (window.openRechargeModal) {
+                        window.openRechargeModal()
+                    }
+                })
+            }
+
+            // Botão Sair
+            const btnLogout = document.querySelector('.logout')
+            if (btnLogout) {
+                btnLogout.addEventListener('click', () => {
+                    if (window.logout) {
+                        window.logout()
+                    }
+                })
+            }
+        })
+    </script>
+
+</body>
+</html>
