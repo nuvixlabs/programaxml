@@ -977,24 +977,50 @@
         window.carregarHistorico = () => {
             const historico = JSON.parse(localStorage.getItem('xmlHistorico') || '[]')
             const listDiv = document.getElementById('xmlHistoryList')
+            const agora = new Date()
 
-            if (historico.length === 0) {
+            // Filtrar XMLs que ainda não expiraram (24 horas)
+            const historicoValido = historico.filter(xml => {
+                if (!xml.data) return true // Se não tem data, mantém
+                
+                const dataXml = new Date(xml.data)
+                const horasPassadas = (agora - dataXml) / (1000 * 60 * 60)
+                return horasPassadas < 24
+            })
+
+            // Atualizar localStorage removendo expirados
+            if (historicoValido.length !== historico.length) {
+                localStorage.setItem('xmlHistorico', JSON.stringify(historicoValido))
+            }
+
+            if (historicoValido.length === 0) {
                 listDiv.innerHTML = `
                     <div style="text-align: center; color: #999; padding: 20px;">
-                        Nenhum XML no histórico ainda. Faça uma busca para começar! 📭
+                        Nenhum XML no histórico (XMLs expiram em 24 horas). Faça uma busca para começar! 📭
                     </div>
                 `
                 return
             }
 
             let html = ''
-            historico.reverse().forEach((xml, index) => {
+            historicoValido.reverse().forEach((xml, index) => {
+                // Calcular horas restantes
+                const dataXml = new Date(xml.data)
+                const horasPassadas = (agora - dataXml) / (1000 * 60 * 60)
+                const horasRestantes = Math.max(0, 24 - horasPassadas)
+                const diasHoras = horasRestantes < 1 ? 
+                    `${Math.round(horasRestantes * 60)} minutos` : 
+                    `${Math.round(horasRestantes)}h`
+
+                // Cor de alerta se falta pouco tempo
+                const corAlerta = horasRestantes < 2 ? 'background: #ffe7e7; border-left: 4px solid #dc3545;' : ''
+
                 html += `
-                    <div class="xml-item" id="xml-item-${xml.id}">
+                    <div class="xml-item" id="xml-item-${xml.id}" style="${corAlerta}">
                         <input type="checkbox" class="xml-checkbox" data-xml-id="${xml.id}" onchange="updateSelectedCount()">
                         <div class="xml-info">
                             <div class="xml-name">📄 ${xml.nome}</div>
-                            <div class="xml-date">📅 ${xml.data} • ${xml.origem === 'cache' ? '💾 Cache' : '🌐 API'}</div>
+                            <div class="xml-date">📅 ${xml.data} • ${xml.origem === 'cache' ? '💾 Cache' : '🌐 API'} • ⏰ Expira em ${diasHoras}</div>
                         </div>
                         <div class="xml-actions">
                             <button class="xml-download-btn" onclick="downloadXMLUnitario('${xml.id}')">⬇️ Download</button>

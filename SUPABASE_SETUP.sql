@@ -19,9 +19,21 @@ CREATE TABLE IF NOT EXISTS consultas_xml (
   chave_acesso TEXT NOT NULL,
   xml_conteudo TEXT,
   data_consulta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL '24 hours'),
   custou_credito DECIMAL(10, 2) DEFAULT 0.15,
   origem TEXT DEFAULT 'api'
 );
+
+-- Index para deletar automaticamente XMLs expirados
+CREATE INDEX IF NOT EXISTS idx_consultas_xml_expires_at ON consultas_xml(expires_at);
+
+-- Função para deletar XMLs expirados (executar periodicamente)
+CREATE OR REPLACE FUNCTION deletar_xmls_expirados()
+RETURNS void AS $$
+BEGIN
+  DELETE FROM consultas_xml WHERE expires_at < CURRENT_TIMESTAMP;
+END;
+$$ LANGUAGE plpgsql;
 
 -- Tabela de Transações de Créditos
 CREATE TABLE IF NOT EXISTS transacoes_creditos (
