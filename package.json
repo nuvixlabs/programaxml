@@ -1,16 +1,15 @@
 {
-  "name": "programaxml-api",
+  "name": "your-project-name",
   "version": "1.0.0",
-  "description": "API para buscar XMLs com sistema de créditos",
-  "main": "api/buscar-xml.js",
+  "description": "Your project description",
+  "main": "index.js",
   "scripts": {
-    "dev": "node api/buscar-xml.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo 'Error: no test specified' && exit 1"
   },
-  "keywords": ["xml", "danfe", "meudanfe", "api"],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
-    "@supabase/supabase-js": "^2.43.4"
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mercadopago": "^1.8.1"
   }
 }
